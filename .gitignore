@@ -78,3 +78,6 @@ typings/
 # Output
 dist*
 types
+
+tmp
+.DS_Store

@@ -4,4 +4,12 @@
     "source.organizeImports": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "files.associations": {
+    "*.ejs": "html",
+    "*.js": "javascriptreact",
+    "*.ts": "typescript",
+    "*.css": "postcss",
+    "stdlib.h": "c",
+    "string.h": "c"
+  },
 }

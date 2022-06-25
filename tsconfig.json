@@ -1,32 +1,27 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+  },
   "compilerOptions": {
     "strict": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
-    "module": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "declaration": true,
+    "declarationDir": "types",
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "target": "ES2020",
     "sourceMap": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true,
-    "lib": [
-      "ES2020",
-    ],
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "outDir": "dist/esm",
-    "declaration": true,
-    "declarationDir": "types",
-    "types": [
-      "jest",
-    ]
+    "skipLibCheck": true,
+    "outDir": "dist",
   },
   "include": [
     "src/**/*.ts"
-  ],
-  "exclude": [
-    "**/*.test.ts",
   ]
 }
