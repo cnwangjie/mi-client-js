@@ -8,9 +8,9 @@
   "author": "Wang Jie <i@i8e.net>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "yarn build:cjs && yarn build:esm",
+    "build:esm": "tsc -p . -m ESNext --outDir dist/esm",
     "build:cjs": "tsc -p . -m commonjs --outDir dist/cjs",
-    "build:all": "yarn build:cjs && yarn build",
     "test": "jest",
     "prepublishOnly": "yarn build"
   },

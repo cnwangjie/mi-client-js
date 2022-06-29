@@ -9,6 +9,7 @@ import assert from 'assert'
 import crypto from 'crypto'
 import { createArc4 } from './arc4'
 import ProxyAgent from 'proxy-agent'
+import pako from 'pako'
 
 const MiLoginUrl = 'https://account.xiaomi.com/pass/serviceLoginAuth2'
 
@@ -94,11 +95,12 @@ export const parseEncParams = (
 
 export const parseResponse = (
   rawText: string,
-  ssecurity: string,
-  nonce: string,
+  signedNonce: string,
+  gzip?: boolean,
 ) => {
-  const signedNonce = getSignedNonce(ssecurity, nonce)
-  return decryptRc4(signedNonce, rawText)
+  const result = decryptRc4(signedNonce, rawText)
+  if (gzip) return Buffer.from(pako.inflate(result))
+  return result
 }
 
 export const encryptRc4 = (key: string, str: string) => {
@@ -106,11 +108,6 @@ export const encryptRc4 = (key: string, str: string) => {
   arc4.encrypt(Buffer.alloc(1024))
   return arc4.encrypt(Buffer.from(str)).toString('base64')
 }
-
-const b2s = (b: Buffer) =>
-  Array.from(b)
-    .map(i => i.toString(16).padStart(2, '0'))
-    .join(' ')
 
 export const decryptRc4 = (key: string, str: string) => {
   const arc4 = createArc4(Buffer.from(key, 'base64'))
@@ -327,7 +324,8 @@ export class MiClient {
       'Accept-Encoding': 'identity',
       'x-xiaomi-protocal-flag-cli': 'PROTOCAL-HTTP2',
       'content-type': 'application/x-www-form-urlencoded',
-      'MIOT-ENCRYPT-ALGORITHM': 'ENCRYPT-RC4',
+      'miot-encrypt-algorithm': 'ENCRYPT-RC4',
+      'miot-accept-encoding': 'GZIP',
       Cookie: this.stringifyCookie(cookies),
     }
 
@@ -357,8 +355,9 @@ export class MiClient {
     })
 
     const rawData = await res.text()
+    const gzip = res.headers.get('miot-content-encoding') === 'GZIP'
     this.logger.debug(`req ${url}. status=${res.status} resBody=${rawData}`)
-    const resData = parseResponse(rawData, ssecurity, nonce)
+    const resData = parseResponse(rawData, signedNonce, gzip)
     return JSON.parse(resData.toString())
   }
 }
